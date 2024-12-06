@@ -19,7 +19,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta property="og:type" content="website">
@@ -178,7 +178,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-12-07 00:55:33 / Modified: 00:56:53" itemprop="dateCreated datePublished" datetime="2024-12-07T00:55:33+11:00">2024-12-07</time>
+              <time title="Created: 2024-12-07 00:55:33 / Modified: 01:36:21" itemprop="dateCreated datePublished" datetime="2024-12-07T00:55:33+11:00">2024-12-07</time>
             </span>
 
           
@@ -192,7 +192,62 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>LLMs have shown impressive capabilities to comprehend and generate human-like text. In the realm of Electronic Design Automation, LLMs have the potential to aid engineers in designing and verifying digital systems, providing insights into Verilog coding, optimizing circuits, and automating time-consuming tasks.<br>Models like fine-tuned CodeGen and ChatGPT has initialed the evaluation of LLMs’ potential in generating Verilog code and solution quality can be improved by simple and effective prompt engineering techniques.<br>However, LLMs’ pretraining phase using unsupervised training loss often lacks alignment with specific tasks, so supervised fine-tuning(SFT) is used to involve task-specific data to adapt to requirements, driving investigation of computationally demanding techniques such as reinforcement learning with human feedback. Acquiring labeled data is also cost-demanding, triggered a growing interest in alternative annotation-free alignment techniques. In the realm of Verilog coding, there remains a notable gap in the exploration of supervised fine-tuning for model enhancement.<br>While there have been attempts to evaluate LLMs for Verilog, prior benchmarks like RTLLM focus on limited tasks or lack diversity in problem sets. They have problems like:</p>
+<ol>
+<li>lack of diversity(testing variance)</li>
+<li>ambiguous problem descriptions</li>
+<li>key factors: reliability and automation<br>Hence the paper introduced a open-source benchmark, <strong>VerilogEval</strong>,</li>
+<li>A <strong>comprehensive evaluation dataset</strong> for diverse Verilog tasks.</li>
+<li><strong>Automated</strong> methods to evaluate the <strong>functional correctness</strong> of generated Verilog code.</li>
+<li>Exploring the role of <strong>supervised fine-tuning (SFT)</strong> to improve LLMs’ Verilog generation performance.</li>
+</ol>
+<h2 id="Methods"><a href="#Methods" class="headerlink" title="Methods"></a>Methods</h2><h3 id="1-Evaluation-Framework-A-Verilog-Evaluation-Set-and-Evaluate-Metrics"><a href="#1-Evaluation-Framework-A-Verilog-Evaluation-Set-and-Evaluate-Metrics" class="headerlink" title="1. Evaluation Framework: A Verilog Evaluation Set and Evaluate Metrics"></a>1. Evaluation Framework: A Verilog Evaluation Set and Evaluate Metrics</h3><p>They created a dataset with <strong>156 diverse problems</strong> from HDLBits, covering tasks from simple combinational circuits to complex finite state machines, code debugging, and testbench construction.<br>Used two methods to generate problem descriptions, <strong>Verilog-human</strong> and <strong>Verilog-machine</strong>. <strong>VerilogEval-human</strong> is manually curated descriptions from HDLBits problems, <strong>VerilogEval-machine</strong> is Machine-generated descriptions using GPT-3.5.<br>The machine version are often more verbose, and also frequently delve into low-level details, tending to mirror the code’s implementation line by line, rather than focusing on the overarching functionality of the circuit.<br>For <strong>Automated Evaluation Framework</strong>, the paper uses <strong>functional correctness</strong> testing to validate the generated Verilog code by simulating its behavior and comparing results with a golden solution. They also combines deterministic and randomized test patterns to ensure robustness.<br>For <strong>Evaluation metric</strong>, the paper tried to use BLEU score, but recent works showed that it does not correlate well with functional correctness. This is because BLEU calculates similarity by comparing the n-grams (contiguous sequences of n words) between the generated text and the reference text, it only measures syntactic similarity, even if the generated code does not exactly match the reference code, it may still perform the same function.<br>Instead they use pass@k score, evaluates the likelihood of generating at least one correct solution among kkk attempts.</p>
+<h3 id="2-Supervised-Fine-tuning"><a href="#2-Supervised-Fine-tuning" class="headerlink" title="2. Supervised Fine-tuning"></a>2. Supervised Fine-tuning</h3><p>They generated synthetic training data by pairing Verilog modules from GitHub with corresponding problem descriptions created by LLMs. Fine-tuned LLMs on this synthetic dataset to improve task alignment.<br>Base-models:</p>
+<ul>
+<li>codegen-nl: Natural language model. Trained on ThePile 825.18GB English text corpus.</li>
+<li>codegen-multi: Code model. Initialized from codegen-nl and continue trained on BigQuery multi- lingual code dataset consisting of C, C++, Go, Java, JavaScript, and Python.</li>
+<li>codegen-verilog: Verilog code model. Initialized from codegen-multi and continue trained on ∼300MB of Github Verilog and 400MB of textbook data.</li>
+</ul>
+<h2 id="Results"><a href="#Results" class="headerlink" title="Results:"></a>Results:</h2><ul>
+<li>More capable and larger models generally result in better Verilog coding capabilities.</li>
+<li>Synthetically generated data yields notable enhancements in downstream model perfor- mance.</li>
+<li>In the case of verilog models, VerilogEval- machine exhibited significant performance gains, whereas the VerilogEval-human approach displayed comparatively less improvement and, at times, even slight deteriorations.</li>
+<li>Increasing SFT (and Verilog pretraining) data diversity and quality would further lead to increased performance.<br>Overall,</li>
+<li><strong>Baseline Performance</strong>:<ul>
+<li>GPT-4 outperformed GPT-3.5 across both datasets.</li>
+<li>Fine-tuned CodeGen models showed significant improvement over base models, particularly for VerilogEval-machine.</li>
+</ul>
+</li>
+<li><strong>Impact of Fine-Tuning</strong>:<ul>
+<li>Supervised fine-tuning on the synthetic dataset improved performance but highlighted issues of overfitting and limited generalizability to human-crafted problems.</li>
+<li>Fine-tuned models achieved comparable performance to GPT-3.5 but required less computational effort.</li>
+</ul>
+</li>
+<li><strong>Model Scaling</strong>:<ul>
+<li>Larger models (e.g., CodeGen-16B) consistently outperformed smaller ones.</li>
+<li>Base models pre-trained on Verilog data (CodeGen-verilog) showed better alignment with VerilogEval tasks.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Weakness"><a href="#Weakness" class="headerlink" title="Weakness"></a>Weakness</h2><ul>
+<li><strong>Limited Scope</strong>:<ul>
+<li>The benchmark evaluates standalone Verilog modules and does not address critical aspects like <strong>module instantiation</strong> or <strong>system-level design</strong>, which are essential in real-world hardware projects.</li>
+</ul>
+</li>
+<li><strong>Synthetic Data Limitations</strong>:<ul>
+<li>Machine-generated descriptions lack the diversity and nuance of human-crafted examples, which may hinder generalizability.</li>
+</ul>
+</li>
+<li><strong>Functional Testing Only</strong>:<ul>
+<li>The evaluation framework does not consider <strong>synthesizability</strong> or <strong>performance metrics</strong> (e.g., power, performance, and area optimizations) of the generated circuits.</li>
+</ul>
+</li>
+<li><strong>Overfitting Risk</strong>:<ul>
+<li>Fine-tuning on synthetic data risks overfitting, as models may learn dataset-specific patterns rather than general principles.</li>
+</ul>
+</li>
+</ul>
+
       
     </div>
 
@@ -307,7 +362,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">DizzyHardSugar</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
 
         
