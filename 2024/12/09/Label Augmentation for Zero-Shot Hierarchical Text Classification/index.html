@@ -14,7 +14,7 @@
 <meta property="og:description" content="创新点：  提出一种新的标签增强技术，能够为深层级标签生成新的子标签。 扩展了 UP 方法，使其能改进叶节点的分类性能。 提出了一组指标用于评估层级标签的密度和细粒度。 在四个公开数据集上进行了实验，在三个数据集上实现了最新的 SOTA（state-of-the-art）结果。  Method基于Bongiovanni 等人（2023）提出的上推分数传播（Upward Score Propagat">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-12-09T01:50:39.574Z">
-<meta property="article:modified_time" content="2024-12-09T01:51:38.688Z">
+<meta property="article:modified_time" content="2024-12-09T01:54:10.935Z">
 <meta property="article:author" content="DizzyHardSugar">
 <meta name="twitter:card" content="summary">
     
@@ -65,7 +65,11 @@
 		</script>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
 	
-<meta name="generator" content="Hexo 7.3.0"></head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -211,7 +215,7 @@
 </tr>
 <tr>
 <td>$(\downarrow c_{j}^{l})_i$</td>
-<td>标签 $c_{j}^{l}$​ 的第 iii 个子类别。</td>
+<td>标签 $c_{j}^{l}$​ 的第 i 个子类别。</td>
 </tr>
 <tr>
 <td>对于深度为 $L$ 的标签，其 UP 分数直接等于初始分数：$S_{UP}(c_{j}^{L}) &#x3D; p(c_{j}^{L})$。对于层级中小于 $L$ 的某一层级 $l$，其标签的分数则是递归定义的，需要引入以下符号：</td>
@@ -234,7 +238,7 @@
 <p>$$[c_{j}^{L-1}] [⇑ c_{j}^{L-1}] 对象可以分类为 [↓ c_{j}^{L-1}]。您能否为这些类别提供一些更具体的分类？$$</p>
 <p>例如，在一个产品评论数据集中，如果 $L-1$ 层级有一个标签 “skin care”，其父标签为 “beauty”，子标签为 “face”、”body” 和 “sun”，那么分支集将包含 “skin care”、”beauty”、”face”、”body” 和 “sun”。相应的提示为：</p>
 <p><strong>“skin care” “beauty” 产品可以分类为 “face”、”body” 或 “sun”。您能否为这些类别提供一些更具体的分类？</strong></p>
-<p>生成的新标签层级可以与 UP 方法结合使用，作为深层级 HTC 的基础。需要注意的是，生成的新标签并非最终的分类目标，而是为分类步骤提供更多上下文信息，从而提高预测性能。<br>$$<br>\textbf{Algorithm: The HiLA Algorithm} \<br>\textbf{Input:} \text{Labels hierarchy } H \<br>\textbf{Output:} \text{H is extended with a new leaf level} \<br>\text{for } j \in N_{L-1} \text{ do} \<br>\quad B_{j}^{L-1} \gets c_{j}^{L-1} \cup \Uparrow c_{j}^{L-1} \cup \downarrow c_{j}^{L-1} \<br>\quad P \gets \text{fill_template}(B_{j}^{L-1}) \<br>\quad \downarrow c_{j}^{L} \gets \text{parse}(\text{LLM}(P)) \<br>\text{end}<br>$$</p>
+<p>生成的新标签层级可以与 UP 方法结合使用，作为深层级 HTC 的基础。需要注意的是，生成的新标签并非最终的分类目标，而是为分类步骤提供更多上下文信息，从而提高预测性能。</p>
 <h3 id="簇密度估计"><a href="#簇密度估计" class="headerlink" title="簇密度估计:"></a>簇密度估计:</h3><p>方法高度依赖于层级结构的质量。由于新标签的生成依赖于现有标签，标签嵌入的密度成为生成质量的关键决定因素。更高的密度意味着标签空间更语义丰富、组织良好，从而增强增强过程的有效性。</p>
 <p>定义了两种基于余弦相似度的指标：</p>
 <ol>
