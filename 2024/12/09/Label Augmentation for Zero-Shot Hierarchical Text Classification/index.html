@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="创新点：  提出一种新的标签增强技术，能够为深层级标签生成新的子标签。 扩展了 UP 方法，使其能改进叶节点的分类性能。 提出了一组指标用于评估层级标签的密度和细粒度。 在四个公开数据集上进行了实验，在三个数据集上实现了最新的 SOTA（state-of-the-art）结果。  Method基于Bongiovanni 等人（2023）提出的上推分数传播（Upward Score Propagat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification">
+<meta property="og:url" content="http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/index.html">
+<meta property="og:site_name" content="DizzyHardSugar&#39;s Blog">
+<meta property="og:description" content="创新点：  提出一种新的标签增强技术，能够为深层级标签生成新的子标签。 扩展了 UP 方法，使其能改进叶节点的分类性能。 提出了一组指标用于评估层级标签的密度和细粒度。 在四个公开数据集上进行了实验，在三个数据集上实现了最新的 SOTA（state-of-the-art）结果。  Method基于Bongiovanni 等人（2023）提出的上推分数传播（Upward Score Propagat">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-12-09T01:50:39.574Z">
+<meta property="article:modified_time" content="2024-12-09T01:51:38.688Z">
+<meta property="article:author" content="DizzyHardSugar">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/ghost-solid.svg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/ghost-solid.svg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/ghost-solid.svg">
+        
+      
+    
+    <!-- title -->
+    <title>[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/DizzyHardSugar">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/12/07/LatexTest/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&text=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&is_video=false&description=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification&body=Check out this article: http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&name=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&t=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Results"><span class="toc-number">2.</span> <span class="toc-text">Results</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">2.1.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Weakness"><span class="toc-number">3.</span> <span class="toc-text">Weakness</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        [Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">DizzyHardSugar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-12-09T01:50:39.574Z" class="dt-published" itemprop="datePublished">2024-12-09</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>创新点：</p>
+<ol>
+<li>提出一种新的标签增强技术，能够为深层级标签生成新的子标签。</li>
+<li>扩展了 UP 方法，使其能改进叶节点的分类性能。</li>
+<li>提出了一组指标用于评估层级标签的密度和细粒度。</li>
+<li>在四个公开数据集上进行了实验，在三个数据集上实现了最新的 SOTA（state-of-the-art）结果。</li>
+</ol>
+<h2 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h2><p>基于Bongiovanni 等人（2023）提出的上推分数传播（Upward Score Propagation, UP）方法。<br>在层级$H$，文档 $d$ 和标签 $c_{j}^{l}$​分别映射到相同的语义向量空间，表示为 $\Psi_d$​ 和 $\Psi_c$​。初始相关性分数为$$p(c_{j}^{l}) &#x3D; SC(\Psi_d(d), \Psi_c(c_{j}^{l}))$$其中SC是余弦相似度。对于一个层级$l$中的所有标签，都会计算与文档的相关性分数 $p(c_{j}^{l})$。<br>随后，作者定义了 UP 方法，该方法通过层级结构向上传播置信分数，将初始相关性分数更新为后验分数 $S_{UP}(c_{j}^{l})$。其基本理念是：如果某个标签与文档相关，那么它的父节点也应该相关。</p>
+<table>
+<thead>
+<tr>
+<th><strong>符号</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$l$</td>
+<td>层级的深度，$l &#x3D; 0, \dots, L$。</td>
+</tr>
+<tr>
+<td>$c_{j}^{l}$</td>
+<td>层级 $l$ 中第 $j$ 个标签。</td>
+</tr>
+<tr>
+<td>$N_l$</td>
+<td>层级 $l$ 中标签的数量。</td>
+</tr>
+<tr>
+<td>$c_0$</td>
+<td>层级的根节点，通常是无名标签或数据集的名称。</td>
+</tr>
+<tr>
+<td>$\uparrow c_{j}^{l}$</td>
+<td>标签 $c_{j}^{l}$ 的父类别（上一层的标签）。</td>
+</tr>
+<tr>
+<td>$\Uparrow c_{j}^{l}$</td>
+<td>标签 $c_{j}^{l}$​ 的所有祖先类别（从根节点到其父节点的所有路径上的标签）。</td>
+</tr>
+<tr>
+<td>$\downarrow c_{j}^{l}$</td>
+<td>标签 $c_{j}^{l}$ 的直接子类别（下一层的标签）。</td>
+</tr>
+<tr>
+<td>$\Downarrow c_{j}^{l}$</td>
+<td>标签 $c_{j}^{l}$ 的所有后代类别（从其子节点到叶节点的所有路径上的标签）。</td>
+</tr>
+<tr>
+<td>$(\downarrow c_{j}^{l})_i$</td>
+<td>标签 $c_{j}^{l}$​ 的第 iii 个子类别。</td>
+</tr>
+<tr>
+<td>对于深度为 $L$ 的标签，其 UP 分数直接等于初始分数：$S_{UP}(c_{j}^{L}) &#x3D; p(c_{j}^{L})$。对于层级中小于 $L$ 的某一层级 $l$，其标签的分数则是递归定义的，需要引入以下符号：</td>
+<td></td>
+</tr>
+</tbody></table>
+<ul>
+<li>n：标签$c_{j}^{l}$的子类别数量（即 $n &#x3D; |\downarrow c_{j}^{l}|$）。</li>
+<li>$S_{UP}^{(i)}(c_{j}^{l})$：在第 iii 个子类别的基础上更新的分数，具体公式为：</li>
+</ul>
+<p>$$S_{UP}^{(i)}(c_{j}^{l}) &#x3D; \begin{cases} \max(p(c_{j}^{l}), 0), &amp; \text{若 } i &#x3D; 0, \ S_{UP}^{(i-1)}(c_{j}^{l}), &amp; \text{若 } (\downarrow c_{j}^{l})<em>i \text{ 不相关(第i个孩子分数小于第i-1次更新后分数)}, \ S</em>{UP}^{(i-1)}(c_{j}^{l}) \cdot e^{\delta_{j,i}}, &amp; \text{若 } (\downarrow c_{j}^{l})<em>i \text{ 相关(目前分数小于第i个孩子上推分数)}, \ S</em>{UP}((\downarrow c_{j}^{l})_i), &amp; \text{若子类别分数更高(第i个孩子的上推分数大于超参数&#x2F;门槛值)}. \end{cases}$$<br>note：</p>
+<ul>
+<li>$S_{UP}^{(i)}(c_{j}^{l})$表示当前节点$c_{j}^{l}$的 <strong>第 i 次更新后的上推分数（UP score）</strong>，通过迭代地结合 $c_{j}^{l}$的子节点$(\downarrow c_{j}^{l})<em>i$的分数计算出来的。每次更新都会逐步整合更多子节点的信息，最终在第 $n &#x3D; |\downarrow c</em>{j}^{l}|$次迭代后，得到完整的 $S_{UP}(c_{j}^{l})$。</li>
+<li>$S_{UP}((\downarrow c_{j}^{l})<em>i)$是子节点 $(\downarrow c</em>{j}^{l})<em>i$的<strong>最终上推分数</strong>，它是通过对子节点自身的分数进行递归计算得到的，而不是直接与 $c</em>{j}^{l}$ 的分数相关。子节点的分数通常取决于其下级节点（如果有下级节点）或者它的初始分数 $p((\downarrow c_{j}^{l})_i)$。</li>
+<li>第一行是截断项更新，第四行是类似DP的第一个值更新；第二行表示第i个孩子分数不值得更新当前分数，第三行是第i个孩子的上推分数可以更新当前分数。</li>
+</ul>
+<h3 id="标签增强："><a href="#标签增强：" class="headerlink" title="标签增强："></a>标签增强：</h3><p>假设有一个数据集 $D$，其标签被组织成深度为 $L$ 的层级 $H$。方法使用一个预训练的大语言模型（LLM），通过为每个叶节点 $c_{j}^{L}$添加新叶节点集合 $\downarrow c_{j}^{L}$ 来增强标签层级。新生成的标签与原始层级结构保持一致，并比 $c_{j}^{L}$​ 更具体。我们假设 $H$ 的每个节点只有一个父节点，因此层级可以用树表示。</p>
+<p>通过提示（prompt）LLM 来生成 $\downarrow c_{j}^{L}$，提示信息由层级结构中提取的上下文组成。原则上，我们希望将整个层级结构包含在提示中，并让 LLM 为所有 $N_{L}$ 个叶节点生成新的子标签。然而，这种方法在许多情况下不可行，原因包括：1）提示可能超出 LLM 的单次处理能力；2）输出可能过长或复杂，无法可靠生成。</p>
+<p>因此，提出了一种迭代方法：为每个 $L-1$ 层级节点的所有子节点同时生成扩展层级。具体而言，定义节点 $c_{j}^{L-1}$ 的分支集 $B_{j}^{L-1}$​ 为包含以下所有标签的集合：<br>$$B_{j}^{L-1} &#x3D; c_{j}^{L-1} \cup ⇑ c_{j}^{L-1} \cup ↓ c_{j}^{L-1}$$<br>然后，为每个分支集创建通用提示模板，形式如下：</p>
+<p>$$[c_{j}^{L-1}] [⇑ c_{j}^{L-1}] 对象可以分类为 [↓ c_{j}^{L-1}]。您能否为这些类别提供一些更具体的分类？$$</p>
+<p>例如，在一个产品评论数据集中，如果 $L-1$ 层级有一个标签 “skin care”，其父标签为 “beauty”，子标签为 “face”、”body” 和 “sun”，那么分支集将包含 “skin care”、”beauty”、”face”、”body” 和 “sun”。相应的提示为：</p>
+<p><strong>“skin care” “beauty” 产品可以分类为 “face”、”body” 或 “sun”。您能否为这些类别提供一些更具体的分类？</strong></p>
+<p>生成的新标签层级可以与 UP 方法结合使用，作为深层级 HTC 的基础。需要注意的是，生成的新标签并非最终的分类目标，而是为分类步骤提供更多上下文信息，从而提高预测性能。<br>$$<br>\textbf{Algorithm: The HiLA Algorithm} \<br>\textbf{Input:} \text{Labels hierarchy } H \<br>\textbf{Output:} \text{H is extended with a new leaf level} \<br>\text{for } j \in N_{L-1} \text{ do} \<br>\quad B_{j}^{L-1} \gets c_{j}^{L-1} \cup \Uparrow c_{j}^{L-1} \cup \downarrow c_{j}^{L-1} \<br>\quad P \gets \text{fill_template}(B_{j}^{L-1}) \<br>\quad \downarrow c_{j}^{L} \gets \text{parse}(\text{LLM}(P)) \<br>\text{end}<br>$$</p>
+<h3 id="簇密度估计"><a href="#簇密度估计" class="headerlink" title="簇密度估计:"></a>簇密度估计:</h3><p>方法高度依赖于层级结构的质量。由于新标签的生成依赖于现有标签，标签嵌入的密度成为生成质量的关键决定因素。更高的密度意味着标签空间更语义丰富、组织良好，从而增强增强过程的有效性。</p>
+<p>定义了两种基于余弦相似度的指标：</p>
+<ol>
+<li><strong>D1 指标</strong>：衡量某个标签的子标签之间的平均相似度，用于评估子标签的紧密程度。</li>
+<li><strong>D2 指标</strong>：衡量父标签与其所有子标签的平均相似度，用于评估子标签与父标签的关联性。</li>
+</ol>
+<h4 id="簇的定义"><a href="#簇的定义" class="headerlink" title="簇的定义"></a>簇的定义</h4><p>我们定义一个标签簇（label cluster，简称簇）为以下集合：</p>
+<p>$$C_{j}^{l+1} &#x3D; c_{j}^{l} \cup \downarrow c_{j}^{l},$$</p>
+<p>即一个标签 $c_{j}^{l}$ 和它的所有子标签的集合。</p>
+<h4 id="D1-指标"><a href="#D1-指标" class="headerlink" title="D1 指标"></a><strong>D1 指标</strong></h4><p>D1 用于衡量某个标签的子标签之间的平均相似度，定义如下：<br>$$D1(C_{j}^{l+1}) &#x3D; \frac{\sum_{i,k} SC(\Psi_c((\downarrow c_{j}^{l})<em>i), \Psi_c((\downarrow c</em>{j}^{l})<em>k))}{\binom{|\downarrow c</em>{j}^{l}|}{2}},$$</p>
+<p>其中：</p>
+<ul>
+<li>$SC$ 表示余弦相似度。</li>
+<li>$(\downarrow c_{j}^{l})<em>i$和 $(\downarrow c</em>{j}^{l})<em>k$ 是标签 $c</em>{j}^{l}$​ 的第 $i$ 和第 $k$ 个子标签。</li>
+<li>$|\downarrow c_{j}^{l}|$ 是标签 $c_{j}^{l}$ 的子标签数量。</li>
+<li>分母 $\binom{|\downarrow c_{j}^{l}|}{2}$ 表示标签子节点中可能的两两组合数。</li>
+</ul>
+<p><strong>作用</strong>：D1 测量标签的子标签之间的紧密程度，子标签之间的相似度越高，D1 值越大。</p>
+<h4 id="D2-指标"><a href="#D2-指标" class="headerlink" title="D2 指标"></a><strong>D2 指标</strong></h4><p>D2 用于衡量某个标签与其子标签之间的平均相似度，定义如下：<br>$$D2(C_{j}^{l+1}) &#x3D; \frac{\sum_{i&#x3D;1}^{|\downarrow c_{j}^{l}|} SC(\Psi_c(c_{j}^{l}), \Psi_c((\downarrow c_{j}^{l})<em>i))}{|\downarrow c</em>{j}^{l}|},$$</p>
+<p>其中：</p>
+<ul>
+<li>$SC$ 表示余弦相似度。</li>
+<li>$c_{j}^{l}$​ 是当前标签节点。</li>
+<li>$(\downarrow c_{j}^{l})<em>i$是标签 $c</em>{j}^{l}$的第 $i$ 个子标签。</li>
+<li>分母 $|\downarrow c_{j}^{l}|$ 是当前标签的子标签数量。</li>
+</ul>
+<p><strong>作用</strong>：D2 测量标签与其子标签之间的关联性，子标签越接近父标签，D2 值越大。</p>
+<h4 id="层级整体计算"><a href="#层级整体计算" class="headerlink" title="层级整体计算"></a><strong>层级整体计算</strong></h4><p>将上述两个指标应用到层级结构中的每一层，方法如下：</p>
+<ul>
+<li>对每个层级 $l’ &gt; 0$，我们对所有属于该层的簇 $C_{j}^{l’}$ 的指标值取平均值。</li>
+<li>需要注意的是，由于根节点 $c_0$​ 没有嵌入表示，D2 在层级 $l’ &#x3D; 1$ 时无定义。</li>
+</ul>
+<h2 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h2><ul>
+<li><strong>实验数据集</strong><br>  作者在以下四个公开的层级文本分类（HTC）数据集上验证了方法的有效性：<ul>
+<li><strong>DBPedia Classes</strong>: 包括 Wikipedia 文章，层级深度为 3。</li>
+<li><strong>Web Of Science</strong>: 包括科学领域的研究摘要，层级深度为 2。</li>
+<li><strong>Amazon Product Reviews</strong>: 包括产品评论，层级深度为 3。</li>
+<li><strong>Books Blurbs</strong>: 包括书籍简介，层级深度为 2。</li>
+</ul>
+</li>
+<li><strong>主要实验结果</strong><ul>
+<li>提出的 <strong>HiLA + UP 方法</strong> 在三个数据集（DBPedia、Amazon、Books）上达到了 <strong>新的最先进（SOTA）性能</strong>，特别是在最深层级（叶节点）上效果显著。</li>
+<li>对比结果表明，结合 HiLA 进行标签增强后的性能优于仅使用 UP 方法或传统 ZSC 方法（基于嵌入相似度）。</li>
+<li>在 Web Of Science 数据集上，HiLA 方法未带来提升，且分类性能略有下降。</li>
+</ul>
+</li>
+<li><strong>指标分析</strong><ul>
+<li>使用余弦相似度指标 D1 和 D2 测量层级的密度与一致性：<ul>
+<li>高 D1 和 D2 的层级更密集，表示生成的新标签具有更高的语义一致性。</li>
+<li>Web Of Science 数据集中，标签的一致性随着层级深度增加而下降，表明标签生成不够具体，导致分类性能下降。</li>
+</ul>
+</li>
+<li>实验证实 D1 和 D2 与分类性能高度相关，可作为判断层级质量的前期工具。</li>
+</ul>
+</li>
+</ul>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a><strong>结论</strong></h3><ol>
+<li><strong>主要贡献</strong>：<ul>
+<li><strong>标签增强方法（HiLA）</strong> 提高了层级标签的粒度与语义密度，使分类模型在深层级（尤其是叶节点）上的表现大幅提升。</li>
+<li><strong>新指标</strong> D1D1D1 和 D2D2D2 可以定量分析层级结构的语义质量，帮助评估 HiLA 方法的适用性。</li>
+</ul>
+</li>
+<li><strong>实验验证</strong>：<ul>
+<li>在四个数据集上进行了全面验证，其中三个数据集表现优异，证明方法的通用性和有效性。</li>
+<li>HiLA 方法生成的标签不仅与其父节点一致，还与整个分支语义相关性较高，从而提升了分类性能。</li>
+</ul>
+</li>
+<li><strong>方法价值</strong>：<ul>
+<li>HiLA 提供了一种在零样本环境下处理层级文本分类的新途径，适合需要动态扩展标签体系的应用场景（如电子商务、文档组织等）。</li>
+</ul>
+</li>
+</ol>
+<h2 id="Weakness"><a href="#Weakness" class="headerlink" title="Weakness"></a>Weakness</h2><ol>
+<li><strong>依赖层级输入质量</strong>：<ul>
+<li>HiLA 方法依赖于输入的标签层级是否语义清晰且密集。如果初始层级较差（如 Web Of Science 数据集的标签一致性较低），生成的子标签可能无效或过于通用，反而降低分类性能。</li>
+</ul>
+</li>
+<li><strong>标签生成质量限制</strong>：<ul>
+<li>标签增强依赖于预训练的大语言模型（LLM）。如果 LLM 对领域知识的掌握不足，可能会生成语义无关或冗余的标签。</li>
+<li>未控制生成标签的数量和质量，可能导致层级结构过度复杂。</li>
+</ul>
+</li>
+<li><strong>工具依赖</strong>：<ul>
+<li>研究中使用了 OpenAI 的 GPT-3.5 模型，这是一种闭源工具，限制了方法的可复现性和对开源系统的推广。</li>
+<li>如果将方法迁移到其他 LLM（如 LLaMA 或 Orca-2），效果尚未验证。</li>
+</ul>
+</li>
+<li><strong>数据集适应性有限</strong>：<ul>
+<li>对于层级深度较小、标签多样性不足的数据集（如 Web Of Science），方法的优势不明显，可能无法有效提升性能。</li>
+</ul>
+</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/DizzyHardSugar">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Results"><span class="toc-number">2.</span> <span class="toc-text">Results</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">2.1.</span> <span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Weakness"><span class="toc-number">3.</span> <span class="toc-text">Weakness</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&text=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&is_video=false&description=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification&body=Check out this article: http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&title=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&name=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/12/09/Label%20Augmentation%20for%20Zero-Shot%20Hierarchical%20Text%20Classification/&t=[Reading Notes(CN注意)]Label Augmentation for Zero-Shot Hierarchical Text Classification"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024
+    DizzyHardSugar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/DizzyHardSugar">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
