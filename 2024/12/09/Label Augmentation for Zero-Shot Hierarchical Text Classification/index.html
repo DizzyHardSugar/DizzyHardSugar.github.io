@@ -14,7 +14,7 @@
 <meta property="og:description" content="创新点： 1. 提出一种新的标签增强技术，能够为深层级标签生成新的子标签。 2. 扩展了 UP 方法，使其能改进叶节点的分类性能。 3. 提出了一组指标用于评估层级标签的密度和细粒度。 4. 在四个公开数据集上进行了实验，在三个数据集上实现了最新的 SOTA（state-of-the-art）结果。 Method 基于Bongiovanni 等人（2023）提出的上推分数传播（Upward Sco">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-12-09T01:50:39.574Z">
-<meta property="article:modified_time" content="2024-12-10T04:46:00.870Z">
+<meta property="article:modified_time" content="2024-12-10T04:49:20.490Z">
 <meta property="article:author" content="DizzyHardSugar">
 <meta name="twitter:card" content="summary">
     
@@ -238,7 +238,7 @@ mjx-container[display="true"] + br {
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#weakness"><span class="toc-number">2.</span> <span class="toc-text">Weakness</span></a></li></ol>
       </div>
     
   </span>
@@ -485,9 +485,11 @@ ZSC 方法（基于嵌入相似度）。</li>
 <li><strong>方法价值</strong>：
 <ul>
 <li>HiLA
-提供了一种在零样本环境下处理层级文本分类的新途径，适合需要动态扩展标签体系的应用场景（如电子商务、文档组织等）。
-## Weakness</li>
+提供了一种在零样本环境下处理层级文本分类的新途径，适合需要动态扩展标签体系的应用场景（如电子商务、文档组织等）。</li>
 </ul></li>
+</ol>
+<h2 id="weakness">Weakness</h2>
+<ol type="1">
 <li><strong>依赖层级输入质量</strong>：
 <ul>
 <li>HiLA
@@ -540,7 +542,7 @@ Science），方法的优势不明显，可能无法有效提升性能。</li>
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#method"><span class="toc-number">1.</span> <span class="toc-text">Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.1.</span> <span class="toc-text">标签增强：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B0%87%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">簇密度估计:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B0%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">簇的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d1-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.2.</span> <span class="toc-text">D1 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#d2-%E6%8C%87%E6%A0%87"><span class="toc-number">1.2.3.</span> <span class="toc-text">D2 指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B1%82%E7%BA%A7%E6%95%B4%E4%BD%93%E8%AE%A1%E7%AE%97"><span class="toc-number">1.2.4.</span> <span class="toc-text">层级整体计算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#weakness"><span class="toc-number">2.</span> <span class="toc-text">Weakness</span></a></li></ol>
       </div>
     
 

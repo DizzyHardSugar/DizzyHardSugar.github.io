@@ -14,7 +14,7 @@
 <meta property="og:description" content="An open-source benchmark, VerilogEval.">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-12-06T13:55:33.762Z">
-<meta property="article:modified_time" content="2024-12-10T04:20:44.576Z">
+<meta property="article:modified_time" content="2024-12-10T04:50:32.685Z">
 <meta property="article:author" content="DizzyHardSugar">
 <meta name="twitter:card" content="summary">
     
@@ -238,7 +238,8 @@ mjx-container[display="true"] + br {
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#motivation"><span class="toc-number">1.</span> <span class="toc-text">Motivation</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#motivation"><span class="toc-number">1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#methods"><span class="toc-number">2.</span> <span class="toc-text">Methods</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#evaluation-framework-a-verilog-evaluation-set-and-evaluate-metrics"><span class="toc-number">2.1.</span> <span class="toc-text">1.
+Evaluation Framework: A Verilog Evaluation Set and Evaluate Metrics</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#supervised-fine-tuning"><span class="toc-number">2.2.</span> <span class="toc-text">2. Supervised Fine-tuning</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#results"><span class="toc-number">3.</span> <span class="toc-text">Results:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#weakness"><span class="toc-number">4.</span> <span class="toc-text">Weakness</span></a></li></ol>
       </div>
     
   </span>
@@ -297,81 +298,125 @@ In the realm of Verilog coding, there remains a notable gap in the
 exploration of supervised fine-tuning for model enhancement. While there
 have been attempts to evaluate LLMs for Verilog, prior benchmarks like
 RTLLM focus on limited tasks or lack diversity in problem sets. They
-have problems like: 1. lack of diversity(testing variance) 2. ambiguous
-problem descriptions 3. key factors: reliability and automation Hence
-the paper introduced a open-source benchmark,
-<strong>VerilogEval</strong>, 1. A <strong>comprehensive evaluation
-dataset</strong> for diverse Verilog tasks. 2.
-<strong>Automated</strong> methods to evaluate the <strong>functional
-correctness</strong> of generated Verilog code. 3. Exploring the role of
-<strong>supervised fine-tuning (SFT)</strong> to improve LLMs’ Verilog
-generation performance. ## Methods ### 1. Evaluation Framework: A
-Verilog Evaluation Set and Evaluate Metrics They created a dataset with
-<strong>156 diverse problems</strong> from HDLBits, covering tasks from
-simple combinational circuits to complex finite state machines, code
-debugging, and testbench construction. Used two methods to generate
-problem descriptions, <strong>Verilog-human</strong> and
-<strong>Verilog-machine</strong>. <strong>VerilogEval-human</strong> is
-manually curated descriptions from HDLBits problems,
-<strong>VerilogEval-machine</strong> is Machine-generated descriptions
-using GPT-3.5. The machine version are often more verbose, and also
-frequently delve into low-level details, tending to mirror the code’s
-implementation line by line, rather than focusing on the overarching
-functionality of the circuit. For <strong>Automated Evaluation
-Framework</strong>, the paper uses <strong>functional
-correctness</strong> testing to validate the generated Verilog code by
-simulating its behavior and comparing results with a golden solution.
-They also combines deterministic and randomized test patterns to ensure
-robustness. For <strong>Evaluation metric</strong>, the paper tried to
-use BLEU score, but recent works showed that it does not correlate well
-with functional correctness. This is because BLEU calculates similarity
-by comparing the n-grams (contiguous sequences of n words) between the
-generated text and the reference text, it only measures syntactic
-similarity, even if the generated code does not exactly match the
-reference code, it may still perform the same function. Instead they use
-pass@k score, evaluates the likelihood of generating at least one
-correct solution among kkk attempts. ### 2. Supervised Fine-tuning They
-generated synthetic training data by pairing Verilog modules from GitHub
-with corresponding problem descriptions created by LLMs. Fine-tuned LLMs
-on this synthetic dataset to improve task alignment. Base-models: -
-codegen-nl: Natural language model. Trained on ThePile 825.18GB English
-text corpus. - codegen-multi: Code model. Initialized from codegen-nl
-and continue trained on BigQuery multi- lingual code dataset consisting
-of C, C++, Go, Java, JavaScript, and Python. - codegen-verilog: Verilog
-code model. Initialized from codegen-multi and continue trained on
-∼300MB of Github Verilog and 400MB of textbook data. ## Results: - More
-capable and larger models generally result in better Verilog coding
-capabilities. - Synthetically generated data yields notable enhancements
-in downstream model perfor- mance. - In the case of verilog models,
-VerilogEval- machine exhibited significant performance gains, whereas
-the VerilogEval-human approach displayed comparatively less improvement
-and, at times, even slight deteriorations. - Increasing SFT (and Verilog
-pretraining) data diversity and quality would further lead to increased
-performance. Overall, - <strong>Baseline Performance</strong>: - GPT-4
-outperformed GPT-3.5 across both datasets. - Fine-tuned CodeGen models
-showed significant improvement over base models, particularly for
-VerilogEval-machine. - <strong>Impact of Fine-Tuning</strong>: -
-Supervised fine-tuning on the synthetic dataset improved performance but
-highlighted issues of overfitting and limited generalizability to
-human-crafted problems. - Fine-tuned models achieved comparable
-performance to GPT-3.5 but required less computational effort. -
-<strong>Model Scaling</strong>: - Larger models (e.g., CodeGen-16B)
-consistently outperformed smaller ones. - Base models pre-trained on
-Verilog data (CodeGen-verilog) showed better alignment with VerilogEval
-tasks. ## Weakness - <strong>Limited Scope</strong>: - The benchmark
-evaluates standalone Verilog modules and does not address critical
-aspects like <strong>module instantiation</strong> or
+have problems like:</p>
+<ol type="1">
+<li><p>lack of diversity(testing variance)</p></li>
+<li><p>ambiguous problem descriptions</p></li>
+<li><p>key factors: reliability and automation Hence the paper
+introduced a open-source benchmark,
+<strong>VerilogEval</strong>,</p></li>
+<li><p>A <strong>comprehensive evaluation dataset</strong> for diverse
+Verilog tasks.</p></li>
+<li><p><strong>Automated</strong> methods to evaluate the
+<strong>functional correctness</strong> of generated Verilog
+code.</p></li>
+<li><p>Exploring the role of <strong>supervised fine-tuning
+(SFT)</strong> to improve LLMs’ Verilog generation performance.</p></li>
+</ol>
+<h2 id="methods">Methods</h2>
+<h3 id="evaluation-framework-a-verilog-evaluation-set-and-evaluate-metrics">1.
+Evaluation Framework: A Verilog Evaluation Set and Evaluate Metrics</h3>
+<p>They created a dataset with <strong>156 diverse problems</strong>
+from HDLBits, covering tasks from simple combinational circuits to
+complex finite state machines, code debugging, and testbench
+construction. Used two methods to generate problem descriptions,
+<strong>Verilog-human</strong> and <strong>Verilog-machine</strong>.
+<strong>VerilogEval-human</strong> is manually curated descriptions from
+HDLBits problems, <strong>VerilogEval-machine</strong> is
+Machine-generated descriptions using GPT-3.5. The machine version are
+often more verbose, and also frequently delve into low-level details,
+tending to mirror the code’s implementation line by line, rather than
+focusing on the overarching functionality of the circuit. For
+<strong>Automated Evaluation Framework</strong>, the paper uses
+<strong>functional correctness</strong> testing to validate the
+generated Verilog code by simulating its behavior and comparing results
+with a golden solution. They also combines deterministic and randomized
+test patterns to ensure robustness. For <strong>Evaluation
+metric</strong>, the paper tried to use BLEU score, but recent works
+showed that it does not correlate well with functional correctness. This
+is because BLEU calculates similarity by comparing the n-grams
+(contiguous sequences of n words) between the generated text and the
+reference text, it only measures syntactic similarity, even if the
+generated code does not exactly match the reference code, it may still
+perform the same function. Instead they use pass@k score, evaluates the
+likelihood of generating at least one correct solution among kkk
+attempts.</p>
+<h3 id="supervised-fine-tuning">2. Supervised Fine-tuning</h3>
+<p>They generated synthetic training data by pairing Verilog modules
+from GitHub with corresponding problem descriptions created by LLMs.
+Fine-tuned LLMs on this synthetic dataset to improve task alignment.
+Base-models:</p>
+<ul>
+<li>codegen-nl: Natural language model. Trained on ThePile 825.18GB
+English text corpus.</li>
+<li>codegen-multi: Code model. Initialized from codegen-nl and continue
+trained on BigQuery multi- lingual code dataset consisting of C, C++,
+Go, Java, JavaScript, and Python.</li>
+<li>codegen-verilog: Verilog code model. Initialized from codegen-multi
+and continue trained on ∼300MB of Github Verilog and 400MB of textbook
+data.</li>
+</ul>
+<h2 id="results">Results:</h2>
+<ul>
+<li><p>More capable and larger models generally result in better Verilog
+coding capabilities.</p></li>
+<li><p>Synthetically generated data yields notable enhancements in
+downstream model perfor- mance.</p></li>
+<li><p>In the case of verilog models, VerilogEval- machine exhibited
+significant performance gains, whereas the VerilogEval-human approach
+displayed comparatively less improvement and, at times, even slight
+deteriorations.</p></li>
+<li><p>Increasing SFT (and Verilog pretraining) data diversity and
+quality would further lead to increased performance. Overall,</p></li>
+<li><p><strong>Baseline Performance</strong>:</p>
+<ul>
+<li>GPT-4 outperformed GPT-3.5 across both datasets.</li>
+<li>Fine-tuned CodeGen models showed significant improvement over base
+models, particularly for VerilogEval-machine.</li>
+</ul></li>
+<li><p><strong>Impact of Fine-Tuning</strong>:</p>
+<ul>
+<li>Supervised fine-tuning on the synthetic dataset improved performance
+but highlighted issues of overfitting and limited generalizability to
+human-crafted problems.</li>
+<li>Fine-tuned models achieved comparable performance to GPT-3.5 but
+required less computational effort.</li>
+</ul></li>
+<li><p><strong>Model Scaling</strong>:</p>
+<ul>
+<li>Larger models (e.g., CodeGen-16B) consistently outperformed smaller
+ones.</li>
+<li>Base models pre-trained on Verilog data (CodeGen-verilog) showed
+better alignment with VerilogEval tasks.</li>
+</ul></li>
+</ul>
+<h2 id="weakness">Weakness</h2>
+<ul>
+<li><strong>Limited Scope</strong>:
+<ul>
+<li>The benchmark evaluates standalone Verilog modules and does not
+address critical aspects like <strong>module instantiation</strong> or
 <strong>system-level design</strong>, which are essential in real-world
-hardware projects. - <strong>Synthetic Data Limitations</strong>: -
-Machine-generated descriptions lack the diversity and nuance of
-human-crafted examples, which may hinder generalizability. -
-<strong>Functional Testing Only</strong>: - The evaluation framework
-does not consider <strong>synthesizability</strong> or
-<strong>performance metrics</strong> (e.g., power, performance, and area
-optimizations) of the generated circuits. - <strong>Overfitting
-Risk</strong>: - Fine-tuning on synthetic data risks overfitting, as
-models may learn dataset-specific patterns rather than general
-principles.</p>
+hardware projects.</li>
+</ul></li>
+<li><strong>Synthetic Data Limitations</strong>:
+<ul>
+<li>Machine-generated descriptions lack the diversity and nuance of
+human-crafted examples, which may hinder generalizability.</li>
+</ul></li>
+<li><strong>Functional Testing Only</strong>:
+<ul>
+<li>The evaluation framework does not consider
+<strong>synthesizability</strong> or <strong>performance
+metrics</strong> (e.g., power, performance, and area optimizations) of
+the generated circuits.</li>
+</ul></li>
+<li><strong>Overfitting Risk</strong>:
+<ul>
+<li>Fine-tuning on synthetic data risks overfitting, as models may learn
+dataset-specific patterns rather than general principles.</li>
+</ul></li>
+</ul>
 
   </div>
 </article>
@@ -399,7 +444,8 @@ principles.</p>
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#motivation"><span class="toc-number">1.</span> <span class="toc-text">Motivation</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#motivation"><span class="toc-number">1.</span> <span class="toc-text">Motivation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#methods"><span class="toc-number">2.</span> <span class="toc-text">Methods</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#evaluation-framework-a-verilog-evaluation-set-and-evaluate-metrics"><span class="toc-number">2.1.</span> <span class="toc-text">1.
+Evaluation Framework: A Verilog Evaluation Set and Evaluate Metrics</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#supervised-fine-tuning"><span class="toc-number">2.2.</span> <span class="toc-text">2. Supervised Fine-tuning</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#results"><span class="toc-number">3.</span> <span class="toc-text">Results:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#weakness"><span class="toc-number">4.</span> <span class="toc-text">Weakness</span></a></li></ol>
       </div>
     
 
